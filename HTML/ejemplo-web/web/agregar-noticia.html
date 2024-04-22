@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySite</title>
+</head>
+
+<body>
+    <header>
+        <!-- Navegación de sesión-->
+        <nav aria-label="sesión">
+            <a href="registro.html">Registro</a>
+            <a href="#">Iniciar sesión</a>
+        </nav>
+        <!-- Navegación principal-->
+        <nav aria-label="principal">
+            <ul>
+                <li><a href="index.htm">Inicio</a></li>
+                <li><a href="#">Agregar noticia</a></li>
+                <li><a href="mostrar-noticia.html">Mostrar noticia</a></li>
+            </ul>
+
+
+        </nav>
+        <form method="get" action="#">
+            <label for="búsqueda">Encontrar noticias</label>
+            <input type="search" name="búsqueda" id="búsqueda" minlength="3" placeholder="Escriba texto">
+            <input type="submit" value="Buscar">
+        </form>
+        <!-- Navegación de categorías-->
+        <nav aria-label="categorías">
+            <ul>
+                <li><a href="#">Cultura</a></li>
+                <li><a href="#">Política</a></li>
+                <li><a href="#">Deportes</a></li>
+            </ul>
+
+        </nav>
+
+
+    </header>
+    <main>
+       <h1>Agregar noticia</h1>
+       <form action="#" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="Título">Título</label>
+                <input type="text" name="Título" id="Título" required>
+            </div> 
+            <div>
+                <label for="subtítulo">Subtítulo</label>
+                <input type="text" name="subtítulo" id="subtítulo" required>
+            </div> 
+            <div>
+                <label for="autoría">Autoría</label>
+                <input type="text" name="autoría" id="autoría" required>
+            </div>
+            <div>
+                <label for="categoría">Categoría</label>
+                <select name="categoría" id="categoría" required>
+                    <option disabled value="">...</option>
+                    <option value="cultura">Cultura</option>
+                    <option value="política">Política</option>
+                    <option value="deportes">Deportes</option>
+                </select>
+            </div>
+            <div>
+                <label for="fecha">Fecha</label>
+                <input type="date" name="fecha" id="fecha" required>
+            </div>
+            <div>
+                <label for="imagen">Subir</label>
+                <input type="file" name="imagen" id="imagen" required>
+            </div>
+            <div>
+                <label for="cuerpo">Cuerpo</label>
+                <textarea name="cuerpo" id="cuerpo" cols="30" rows="10" required></textarea>
+            </div>
+            <div>
+                <input type="checkbox" name="comentarios" id="comentarios">
+                <label for="comentarios">Comentario</label>
+            </div>
+            <div>
+                <input type="submit" value="Enviar">
+            </div>
+       </form>
+    </main>
+    <footer>
+
+        <p>Sitio Web 2024 &reg;</p>
+
+        <nav>
+            <ul>
+                <li><a href="#">&#9970; Cultura</a></li>
+                <li><a href="#">&#9918; Política</a></li>
+                <li><a href="#">&#8987; Deportes</a></li>
+            </ul>
+
+        </nav>
+        <nav>
+            <a href="#">Aviso legal</a>
+            <a href="#">Política de cookies</a>
+        </nav>
+    </footer>
+
+</body>
+
+</html>
