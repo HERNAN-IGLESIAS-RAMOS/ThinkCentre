@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr  3 14:05:23 2023
+Modified on Fri Apr 5  10:23:50 2024
+Copy on Thu Apr 25 16:09:33 2024
+
+@author: PDS EPI Gijón 23-24
+
+Recibe fichero de entrada con datos de declaraciones de la renta.
+Valida los datos del fichero referentes a dinero y valores lógicos.
+Calcula la liquidación final de cada contribuyente.
+Genera un fichero de salida con los datos que se mencionan en el enunciado.
+
+"""
+
+import csv
+
+
+def check_money_format(value):
+    if not value.endswith(" €"):
+        return False
+    try:
+        if float(value[:-2].replace(",", ".")) >= 0:
+            return True
+        else:
+            return False
+    except ValueError:
+        return False
+
+
+def check_boolean_format(value):
+    return value.lower() in ["sí", "no"]
+
+
+def money2float(value):
+    return float(value[:-2].replace(",", "."))
+
+
+def calcular_impuesto(base_imponible):
+    if base_imponible <= 12450:
+        impuesto = base_imponible * 0.19
+    elif base_imponible <= 20200:
+        impuesto = (base_imponible - 12450) * 0.24 + calcular_impuesto(12450)
+    elif base_imponible <= 35200:
+        impuesto = (base_imponible - 20200) * 0.30 + calcular_impuesto(20200)
+    elif base_imponible <= 60000:
+        impuesto = (base_imponible - 35200) * 0.37 + calcular_impuesto(35200)
+    elif base_imponible <= 300000:
+        impuesto = (base_imponible - 60000) * 0.45 + calcular_impuesto(60000)
+    else:
+        impuesto = (base_imponible - 300000) * 0.47 + calcular_impuesto(300000)
+
+    return round(impuesto, 2)
+
+#Declaración de variables según especificación
+importe_minimo_declaracion = 9000
+porcentaje_deduccion_hipoteca = 0.15
+limite_desgravacacion_hipoteca = 9040  #Esto es respecto al importe pagado por la hipoteca
+
+with open('entrada.csv', newline='') as f_origen, open('salida.csv', 'w', newline='') as f_destino:
+    reader = csv.DictReader(f_origen, delimiter=';')
+    writer = csv.writer(f_destino, delimiter=';')
+
+    writer.writerow(
+        ["DNI", "Evaluación", "Oblig. Declarar", "Impuesto Base", "Deducc. Hipot.", "Liquid. Final"])
+
+    for row in reader:
+
+        is_valid = True
+        for col in ["Base_imponible", "Retenciones", "Base_imponible_otro", "Retenciones_otro", "Hipoteca"]:
+            if not check_money_format(row[col]):
+                is_valid = False
+
+        if not is_valid:
+            writer.writerow(
+                [row["DNI"], "Error: alguno de los datos no son válidos", "NULL", "NULL", "NULL", "NULL"])
+        else:
+            base_imponible = money2float(row["Base_imponible"])
+            retenciones = money2float(row["Retenciones"])
+            base_imponible_otro = money2float(row["Base_imponible_otro"])
+            retenciones_otro = money2float(row["Retenciones_otro"])
+            hipoteca = money2float(row["Hipoteca"])
+
+            numero_pagadores = 1
+            if (base_imponible_otro > 0):
+                numero_pagadores = numero_pagadores + 1
+
+            oblig_declarar = ""
+
+            if ( (base_imponible >= importe_minimo_declaracion) or (numero_pagadores > 1) ):
+                oblig_declarar = "Sí"
+            else:
+                oblig_declarar = "No"
+
+            base_imponible_total = base_imponible + base_imponible_otro
+            retenciones_total = retenciones + retenciones_otro
+            impuesto_base = calcular_impuesto(base_imponible_total)
+
+            deduccion_hipoteca = min(hipoteca * porcentaje_deduccion_hipoteca, limite_desgravacacion_hipoteca)
+
+            total_impuesto = impuesto_base
+            total_deducciones = deduccion_hipoteca
+  
+            liquidacion = round(max(total_impuesto - total_deducciones, 0) - retenciones_total, 2)
+
+            writer.writerow(
+                [row["DNI"], "Correcto", oblig_declarar, impuesto_base, deduccion_hipoteca, liquidacion])
